@@ -24,3 +24,17 @@
 .nav-link:hover {
     color: #007bff;
 }
+
+.nav-button-logout {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: inherit;
+}
+
+.nav-button-logout:hover {
+    text-decoration: underline;
+}
