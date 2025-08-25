@@ -52,6 +52,8 @@ const Cart = () => {
         }
     };
 
+    console.log(handleCheckout())
+
     return (
         <div className="cart-container">
             <h2>Ваша корзина</h2>

@@ -1,7 +1,7 @@
 -- src/main/resources/import.sql
 
--- Очищаем таблицу перед вставкой, чтобы избежать дубликатов при перезапуске
-DELETE FROM products;
+-- -- Очищаем таблицу перед вставкой, чтобы избежать дубликатов при перезапуске
+-- DELETE FROM products;
 
 -- Добавляем 20 товаров
 INSERT INTO products (name, description, price, stock, created_at) VALUES
