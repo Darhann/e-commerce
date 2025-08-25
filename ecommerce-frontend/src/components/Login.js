@@ -1,7 +1,6 @@
-// src/components/Login.js
-
 import React, { useState } from 'react';
-import apiClient from '../api'; // Наш API клиент
+import apiClient from '../api';
+import './Form.css'; // Импортируем те же стили для формы
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -15,25 +14,22 @@ const Login = () => {
         const loginData = { email, password };
 
         try {
-            // Отправляем запрос на /api/auth/login
             const response = await apiClient.post('/auth/login', loginData);
-
-            // Самый важный шаг: сохраняем токен!
             localStorage.setItem('token', response.data.token);
-
             setMessage('Вход выполнен успешно!');
-            // Можно добавить перенаправление на главную страницу
-            // window.location.href = '/'; 
+            
+            // Перенаправляем пользователя в каталог товаров после успешного входа
+            window.location.href = '/products';
         } catch (error) {
             setMessage('Ошибка: Неверный email или пароль.');
         }
     };
 
     return (
-        <div>
+        <div className="form-container">
             <h2>Вход в систему</h2>
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className="form-group">
                     <label>Email:</label>
                     <input
                         type="email"
@@ -42,7 +38,7 @@ const Login = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Пароль:</label>
                     <input
                         type="password"
@@ -51,9 +47,9 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button type="submit">Войти</button>
+                <button type="submit" className="form-button">Войти</button>
             </form>
-            {message && <p>{message}</p>}
+            {message && <p className={`form-message ${message.startsWith('Ошибка') ? 'error' : ''}`}>{message}</p>}
         </div>
     );
 };

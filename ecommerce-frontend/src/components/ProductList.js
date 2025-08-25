@@ -1,13 +1,11 @@
-// src/components/ProductList.js
-
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api';
+import './Product.css'; // Импортируем стили для товаров
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [message, setMessage] = useState('');
 
-    // useEffect будет вызван один раз при загрузке компонента
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -18,34 +16,35 @@ const ProductList = () => {
             }
         };
         fetchProducts();
-    }, []); // Пустой массив зависимостей означает "выполнить один раз"
+    }, []);
 
     const handleAddToCart = async (productId) => {
-        // Для добавления в корзину нам нужен ID продукта и количество
         const cartItem = {
             product: { id: productId },
-            quantity: 1, // По умолчанию добавляем 1 товар
+            quantity: 1,
         };
 
         try {
-            // Используем наш "умный" apiClient, который сам подставит токен
             await apiClient.post('/cart', cartItem);
-            setMessage(`Товар ${productId} добавлен в корзину!`);
+            setMessage(`Товар добавлен в корзину!`);
+            // Убираем сообщение через 3 секунды
+            setTimeout(() => setMessage(''), 3000);
         } catch (error) {
             setMessage('Ошибка: сначала войдите в систему.');
+            setTimeout(() => setMessage(''), 3000);
         }
     };
 
     return (
         <div>
             <h2>Каталог товаров</h2>
-            {message && <p>{message}</p>}
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {message && <p className="form-message">{message}</p>}
+            <div className="product-grid">
                 {products.map((product) => (
-                    <div key={product.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px', width: '200px' }}>
+                    <div key={product.id} className="product-card">
                         <h4>{product.name}</h4>
                         <p>{product.description}</p>
-                        <p>Цена: {product.price} руб.</p>
+                        <p className="price">{product.price} руб.</p>
                         <p>В наличии: {product.stock} шт.</p>
                         <button onClick={() => handleAddToCart(product.id)}>
                             Добавить в корзину

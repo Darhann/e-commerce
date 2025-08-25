@@ -1,7 +1,6 @@
-// src/components/Register.js
-
 import React, { useState } from 'react';
-import apiClient from '../api'; // Импортируем наш клиент API
+import apiClient from '../api';
+import './Form.css'; // Импортируем стили для формы
 
 const Register = () => {
     // Состояния для хранения данных формы
@@ -23,7 +22,7 @@ const Register = () => {
 
         try {
             // Отправляем POST-запрос на /api/auth/register
-            const response = await apiClient.post('/auth/register', registrationData);
+            await apiClient.post('/auth/register', registrationData);
             setMessage('Регистрация прошла успешно!');
             // Очищаем поля формы
             setFullName('');
@@ -31,19 +30,16 @@ const Register = () => {
             setPassword('');
         } catch (error) {
             // Обрабатываем ошибку
-            if (error.response && error.response.data) {
-                setMessage(`Ошибка: ${error.response.data}`);
-            } else {
-                setMessage('Произошла ошибка при регистрации.');
-            }
+            const errorMessage = error.response?.data || 'Произошла ошибка при регистрации.';
+            setMessage(`Ошибка: ${errorMessage}`);
         }
     };
 
     return (
-        <div>
+        <div className="form-container">
             <h2>Регистрация</h2>
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className="form-group">
                     <label>Полное имя:</label>
                     <input
                         type="text"
@@ -52,7 +48,7 @@ const Register = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Email:</label>
                     <input
                         type="email"
@@ -61,7 +57,7 @@ const Register = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Пароль:</label>
                     <input
                         type="password"
@@ -70,9 +66,9 @@ const Register = () => {
                         required
                     />
                 </div>
-                <button type="submit">Зарегистрироваться</button>
+                <button type="submit" className="form-button">Зарегистрироваться</button>
             </form>
-            {message && <p>{message}</p>}
+            {message && <p className={`form-message ${message.startsWith('Ошибка') ? 'error' : ''}`}>{message}</p>}
         </div>
     );
 };
