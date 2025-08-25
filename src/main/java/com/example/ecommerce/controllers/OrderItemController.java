@@ -1,36 +1,26 @@
 package com.example.ecommerce.controllers;
 
-
-
 import com.example.ecommerce.models.Order;
 import com.example.ecommerce.models.OrderItem;
 import com.example.ecommerce.models.User;
 import com.example.ecommerce.services.OrderItemService;
 import com.example.ecommerce.services.OrderService;
+import com.example.ecommerce.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.ecommerce.services.UserService;
 import java.security.Principal;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/cart") // ПРАВИЛЬНЫЙ БАЗОВЫЙ URL ДЛЯ РАБОТЫ С КОРЗИНОЙ
 @RequiredArgsConstructor
 public class OrderItemController {
+
     private final OrderItemService orderItemService;
     private final UserService userService;
     private final OrderService orderService;
 
-
-    @GetMapping
-    public List<OrderItem> getCurrentUserCartItems(Principal principal) {
-        User currentUser = userService.findByEmail(principal.getName()).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        Order cart = orderService.getOrCreateCartForUser(currentUser);
-        return orderItemService.getItemsByOrderId(cart.getId());
-    }
-
+    // POST /api/cart -> Добавить товар в корзину
     @PostMapping
     public OrderItem addProductToCart(@RequestBody OrderItem orderItem, Principal principal) {
         User currentUser = userService.findByEmail(principal.getName()).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -38,10 +28,10 @@ public class OrderItemController {
         return orderItemService.addItemToOrder(cart.getId(), orderItem);
     }
 
+    // PUT /api/cart/items/{itemId} -> Изменить количество товара
     @PutMapping("/items/{itemId}")
     public ResponseEntity<OrderItem> updateCartItemQuantity(@PathVariable Long itemId, @RequestBody OrderItem itemDetails, Principal principal) {
-        User currentUser = userService.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        User currentUser = userService.findByEmail(principal.getName()).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         try {
             OrderItem updatedItem = orderItemService.updateItemQuantity(itemId, itemDetails.getQuantity(), currentUser);
             return ResponseEntity.ok(updatedItem);
@@ -50,10 +40,10 @@ public class OrderItemController {
         }
     }
 
+    // DELETE /api/cart/items/{itemId} -> Удалить товар из корзины
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long itemId, Principal principal) {
-        User currentUser = userService.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        User currentUser = userService.findByEmail(principal.getName()).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         try {
             orderItemService.deleteItem(itemId, currentUser);
             return ResponseEntity.noContent().build();
@@ -61,16 +51,4 @@ public class OrderItemController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-

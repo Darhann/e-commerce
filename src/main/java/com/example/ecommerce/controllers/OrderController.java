@@ -1,29 +1,22 @@
 package com.example.ecommerce.controllers;
 
-
 import com.example.ecommerce.models.Order;
 import com.example.ecommerce.models.User;
 import com.example.ecommerce.services.OrderService;
 import com.example.ecommerce.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor // Используем Lombok для конструктора
 public class OrderController {
 
     private final OrderService orderService;
     private final UserService userService;
-
-    @Autowired
-    public OrderController(OrderService orderService, UserService userService) {
-        this.orderService = orderService;
-        this.userService = userService;
-    }
 
     @GetMapping
     public List<Order> getAllOrders() {
@@ -51,6 +44,7 @@ public class OrderController {
         }
     }
 
+    // ЭТОТ МЕТОД ТЕПЕРЬ ИМЕЕТ URL /api/orders/cart
     @GetMapping("/cart")
     public ResponseEntity<Order> getUserCart(Principal principal) {
         User currentUser = userService.findByEmail(principal.getName())
@@ -61,16 +55,14 @@ public class OrderController {
     }
 
     @PostMapping("/cart/checkout")
-    public ResponseEntity<Order> checkoutCart(Principal principal) {
+    public ResponseEntity<?> checkoutCart(Principal principal) {
         User currentUser = userService.findByEmail(principal.getName()).orElseThrow(() -> new RuntimeException("Невозможно найти пользователя"));
-
-
         try {
             Order processedOrder = orderService.checkout(currentUser);
             return ResponseEntity.ok(processedOrder);
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(null);
+            // Возвращаем осмысленную ошибку
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }

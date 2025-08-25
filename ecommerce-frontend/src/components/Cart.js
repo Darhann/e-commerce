@@ -31,7 +31,6 @@ const Cart = () => {
         fetchCartItems();
     }, []);
 
-    // ... остальной код (handleCheckout и т.д.) остается без изменений
     const handleCheckout = async () => {
         try {
             await apiClient.post('/orders/cart/checkout');
@@ -39,7 +38,7 @@ const Cart = () => {
             setCartItems([]);
             setTotal(0);
         } catch (error) {
-             const errorMessage = error.response?.data?.message || 'Не удалось оформить заказ. Возможно, корзина пуста.';
+             const errorMessage = error.response?.data || 'Не удалось оформить заказ. Возможно, корзина пуста.';
              setMessage(errorMessage);
         }
     };
@@ -57,7 +56,7 @@ const Cart = () => {
         <div className="cart-container">
             <h2>Ваша корзина</h2>
             {message && <p className="form-message">{message}</p>}
-            {cartItems.length === 0 ? (
+            {cartItems.length === 0 && !message.includes('необходимо войти') ? (
                 <p>Корзина пуста.</p>
             ) : (
                 <div>
@@ -73,12 +72,14 @@ const Cart = () => {
                             </li>
                         ))}
                     </ul>
-                    <div className="cart-summary">
-                        <h3>Итого: {total.toFixed(2)} руб.</h3>
-                        <button onClick={handleCheckout} className="checkout-button">
-                            Оформить заказ
-                        </button>
-                    </div>
+                    {cartItems.length > 0 && (
+                        <div className="cart-summary">
+                            <h3>Итого: {total.toFixed(2)} руб.</h3>
+                            <button onClick={handleCheckout} className="checkout-button">
+                                Оформить заказ
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
